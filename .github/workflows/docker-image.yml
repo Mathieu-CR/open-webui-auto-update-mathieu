@@ -10,7 +10,7 @@ on:
     - cron: '0 0 * * *'
 
 env:
-  DOCKER_IMAGE_NAME: clemsawels/openwebui-awels
+  DOCKER_IMAGE_NAME: mathieuawels/openwebui-awels
 
 jobs:
   build-and-push:
