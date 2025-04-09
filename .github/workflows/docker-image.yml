@@ -60,6 +60,9 @@ jobs:
             --exclude='src/app.html' \
             --exclude='update_ollama_models.sh' \
             open-webui/ app/
+            
+      - name: Show app/ contents
+        run: tree app/ || ls -R app/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
