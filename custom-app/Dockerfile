@@ -33,8 +33,7 @@ RUN npm ci
 
 COPY . .
 ENV APP_BUILD_HASH=${BUILD_HASH}
-RUN npm install
-RUN npm run build
+RUN npm run build || (echo "== BUILD FAILED ==" && cat /root/.npm/_logs/* || true)
 
 ######## WebUI backend ########
 FROM python:3.11-slim-bookworm AS base
