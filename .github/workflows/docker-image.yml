@@ -90,17 +90,20 @@ jobs:
         with:
           node-version: '16' # Specify the required Node.js version
           
-      - name: Build Application
+      - name: Install Dependencies and Build
         run: |
+          # Change directory to where package.json is located
+          cd app
           # Ensure dependencies are installed
           npm install
           # Build the application to generate the 'build' directory
           npm run build
           # Verify the 'build' directory exists
-          if [ ! -d "app/build" ]; then
-            echo "Error: 'app/build' directory not found after build step."
+          if [ ! -d "build" ]; then
+            echo "Error: 'build' directory not found after build step."
             exit 1
           fi
+        working-directory: app
           
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
