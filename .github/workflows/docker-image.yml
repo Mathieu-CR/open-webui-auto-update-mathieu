@@ -1,7 +1,6 @@
 name: Docker GitOps Workflow
 
 on:
-  # Déclenchement sur push vers certaines branches
   push:
     branches:
       - 'main'
@@ -15,15 +14,17 @@ env:
 jobs:
   build-and-push:
     runs-on: self-hosted
+    strategy:
+      matrix:
+        node-version: ['18.x', '20.x']
     steps:
-      - name: Checkout code
+      - name: Checkout code (custom-app)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Copy 'custom-app' to 'app'
         run: cp -r custom-app/. app/
-        
 
       - name: Checkout OpenWebUI
         uses: actions/checkout@v4
@@ -50,7 +51,6 @@ jobs:
             --exclude='update_ollama_models.sh' \
             open-webui/ app/
 
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -59,7 +59,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
+
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
@@ -72,15 +72,19 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: '16' # Specify the required Node.js version
-          
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        working-directory: ./app
+        run: npm ci
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: app  # Utiliser le répertoire "app" comme contexte de build
-          file: app/Dockerfile # Spécifier le Dockerfile dans le répertoire "app"
+          context: app
+          file: app/Dockerfile
           push: true
           tags: ${{ env.DOCKER_IMAGE_NAME }}:latest,${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSION }}
