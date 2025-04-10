@@ -21,11 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Delete contents of 'app' directory
+      - name: Delete contents of 'app' directory except critical files
         shell: bash
         run: |
-          rm -rf app/*
-          find app -type f -print0 | while IFS= read -r -d $'\0' file; do
+          find app -type f ! -name 'package.json' ! -name 'Dockerfile' -print0 | while IFS= read -r -d $'\0' file; do
             rm -f "$file"
           done
           find app -type d -empty -print0 | while IFS= read -r -d $'\0' dir; do
@@ -56,11 +55,17 @@ jobs:
             --exclude='src/lib/components/layout/Sidebar/UserMenu.svelte' \
             --exclude='config.js' \
             --exclude='generate-config.sh' \
-            --exclude='Dockerfile' \
             --exclude='src/app.html' \
             --exclude='update_ollama_models.sh' \
             open-webui/ app/
-            
+
+      - name: Verify required files
+        run: |
+          if [ ! -f "app/package.json" ]; then
+            echo "Error: package.json file is missing in 'app/' directory."
+            exit 1
+          fi
+          
       - name: Show app/ contents
         run: tree app/ || ls -R app/
 
