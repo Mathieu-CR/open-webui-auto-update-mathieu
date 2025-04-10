@@ -21,10 +21,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Delete contents of 'app' directory except critical files
+      - name: Delete contents of 'app' directory
         shell: bash
         run: |
-          find app -type f ! -name 'package.json' ! -name 'Dockerfile' -print0 | while IFS= read -r -d $'\0' file; do
+          mkdir -p app
+          rm -rf app/*
+          find app -type f -print0 | while IFS= read -r -d $'\0' file; do
             rm -f "$file"
           done
           find app -type d -empty -print0 | while IFS= read -r -d $'\0' dir; do
@@ -71,6 +73,10 @@ jobs:
         run: |
           if [ ! -d "app" ]; then
             echo "Error: 'app' directory not found after merge."
+            exit 1
+          fi
+          if [ ! -f "app/package.json" ]; then
+            echo "Error: 'package.json' file is missing in 'app/' directory."
             exit 1
           fi
 
