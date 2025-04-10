@@ -21,28 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Delete contents of 'app' directory
-        shell: bash
-        run: |
-          mkdir -p app
-          rm -rf app/*
-          find app -type f -print0 | while IFS= read -r -d $'\0' file; do
-            rm -f "$file"
-          done
-          find app -type d -empty -print0 | while IFS= read -r -d $'\0' dir; do
-            rmdir "$dir"
-          done
-
-
       - name: Copy 'custom-app' to 'app'
         run: cp -r custom-app/. app/
         
-      - name: Verify 'app' Directory
-        run: |
-          if [ ! -d "app" ]; then
-            echo "Error: 'app' directory not found."
-            exit 1
-          fi
 
       - name: Checkout OpenWebUI
         uses: actions/checkout@v4
@@ -69,26 +50,6 @@ jobs:
             --exclude='update_ollama_models.sh' \
             open-webui/ app/
 
-      - name: Verify 'app' Directory After Merge
-        run: |
-          if [ ! -d "app" ]; then
-            echo "Error: 'app' directory not found after merge."
-            exit 1
-          fi
-          if [ ! -f "app/package.json" ]; then
-            echo "Error: 'package.json' file is missing in 'app/' directory."
-            exit 1
-          fi
-
-      - name: Verify required files
-        run: |
-          if [ ! -f "app/package.json" ]; then
-            echo "Error: package.json file is missing in 'app/' directory."
-            exit 1
-          fi
-          
-      - name: Show app/ contents
-        run: tree app/ || ls -R app/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -115,21 +76,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16' # Specify the required Node.js version
-          
-      - name: Install Dependencies and Build
-        run: |
-          # Change directory to where package.json is located
-          cd app
-          # Ensure dependencies are installed
-          npm install
-          # Build the application to generate the 'build' directory
-          npm run build
-          # Verify the 'build' directory exists
-          if [ ! -d "build" ]; then
-            echo "Error: 'build' directory not found after build step."
-            exit 1
-          fi
-        working-directory: app
           
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
