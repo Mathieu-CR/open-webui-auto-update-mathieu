@@ -85,6 +85,11 @@ jobs:
           fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Specify the required Node.js version
+          
       - name: Build Application
         run: |
           # Ensure dependencies are installed
