@@ -34,6 +34,13 @@ jobs:
 
       - name: Copy 'custom-app' to 'app'
         run: cp -r custom-app/. app/
+        
+      - name: Verify 'app' Directory
+        run: |
+          if [ ! -d "app" ]; then
+            echo "Error: 'app' directory not found."
+            exit 1
+          fi
 
       - name: Checkout OpenWebUI
         uses: actions/checkout@v4
@@ -55,9 +62,17 @@ jobs:
             --exclude='src/lib/components/layout/Sidebar/UserMenu.svelte' \
             --exclude='config.js' \
             --exclude='generate-config.sh' \
+            --exclude='Dockerfile' \
             --exclude='src/app.html' \
             --exclude='update_ollama_models.sh' \
             open-webui/ app/
+
+      - name: Verify 'app' Directory After Merge
+        run: |
+          if [ ! -d "app" ]; then
+            echo "Error: 'app' directory not found after merge."
+            exit 1
+          fi
 
       - name: Verify required files
         run: |
