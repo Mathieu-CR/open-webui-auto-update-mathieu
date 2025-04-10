@@ -111,6 +111,6 @@ jobs:
         run: |
           docker run -d \
             --name awels-ui \
-            -p 8081:8081 \
-            -e AWELS_HOST=http://localhost:8081 \
+            -p 8080:8080 \
+            -e AWELS_HOST=http://localhost:8080 \
             ${{ env.DOCKER_IMAGE_NAME }}:latest
