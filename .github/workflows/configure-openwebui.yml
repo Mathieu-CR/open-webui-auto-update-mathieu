@@ -44,7 +44,6 @@ jobs:
             --exclude='src/lib/components/layout/Sidebar/UserMenu.svelte' \
             --exclude='config.js' \
             --exclude='generate-config.sh' \
-            --exclude='Dockerfile' \
             --exclude='src/app.html' \
             --exclude='update_ollama_models.sh' \
             open-webui/ app/
@@ -87,7 +86,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: app
-          file: custom-app/Dockerfile
+          file: app/Dockerfile
           push: true
           tags: ${{ env.DOCKER_IMAGE_NAME }}:latest,${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSION }}
 
