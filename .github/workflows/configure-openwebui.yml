@@ -112,5 +112,7 @@ jobs:
           docker run -d \
             --name awels-ui \
             -p 8080:8080 \
+            -e ENABLE_API=true \
+            -e OPENAI_API_KEY=dev \
             -e AWELS_HOST=192.168.1.10 \
             ${{ env.DOCKER_IMAGE_NAME }}:latest
