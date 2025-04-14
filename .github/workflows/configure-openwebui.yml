@@ -87,7 +87,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: app
-          file: app/Dockerfile
+          file: custom-app/Dockerfile
           push: true
           tags: ${{ env.DOCKER_IMAGE_NAME }}:latest,${{ env.DOCKER_IMAGE_NAME }}:${{ env.VERSION }}
 
